@@ -15,7 +15,6 @@ const PADDLE_WIDTH = 10;
 
 var player1Score = 0;
 var player2Score = 0;
-
 const WINNING_SCORE = 5;
 
 var showingWinScreen = false;
@@ -27,17 +26,23 @@ function calculateMousePos(evt) {
   var mouseY = evt.clientY - rect.top - root.scrollTop;
   return {
     x: mouseX,
-    y: mouseY,
+    y: mouseY
   };
 }
+
 function ballReset() {
+  // check if either player has won
   if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) {
     showingWinScreen = true;
   }
+
+  // center the ball and change direction of ball
   ballX = canvas.width / 2;
   ballY = canvas.height / 2;
   ballSpeedX = -ballSpeedX;
 }
+
+// reset game on click when on win screen
 function handleMouseClick(evt) {
   if (showingWinScreen) {
     player1Score = 0;
@@ -45,22 +50,26 @@ function handleMouseClick(evt) {
     showingWinScreen = false;
   }
 }
+
 window.onload = function () {
   canvas = document.getElementById("playArea");
   canvasContext = canvas.getContext("2d");
-
   var framesPerSecond = 30;
+
   setInterval(function () {
     moveEverything();
     drawEverything();
   }, 1000 / framesPerSecond);
 
   canvas.addEventListener("mousedown", handleMouseClick);
+
+  // move paddle to mouse location
   canvas.addEventListener("mousemove", function (evt) {
     var mousePos = calculateMousePos(evt);
     paddle1Y = mousePos.y - PADDLE_HEIGHT / 2;
   });
-};
+}
+
 function moveEverything() {
   if (showingWinScreen) {
     return;
@@ -78,6 +87,7 @@ function moveEverything() {
       ballReset();
     }
   }
+
   if (ballX > canvas.width) {
     if (ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT) {
       ballSpeedX = -ballSpeedX;
@@ -92,6 +102,7 @@ function moveEverything() {
   if (ballY > canvas.height) {
     ballSpeedY = -ballSpeedY;
   }
+
   if (ballY < 0) {
     ballSpeedY = -ballSpeedY;
   }
@@ -134,16 +145,12 @@ function drawEverything() {
 
   // ball
   drawCircle(ballX, ballY, 10, "#fff");
+
   // paddle for player
   drawRect(0, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT, "#fff");
+
   // paddle for computer
-  drawRect(
-    canvas.width - PADDLE_WIDTH,
-    paddle2Y,
-    PADDLE_WIDTH,
-    PADDLE_HEIGHT,
-    "#fff"
-  );
+  drawRect(canvas.width - PADDLE_WIDTH, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT, "#fff");
 
   //score
   canvasContext.fillText(player1Score, 100, 100);
